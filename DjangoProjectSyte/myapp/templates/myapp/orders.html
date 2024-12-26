@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Ваши заказы</title>
+    <link rel="stylesheet" href="{% static 'myapp/style.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Ваши заказы</h1>
+    </header>
+    <nav>
+        <a href="/">Главная</a>
+        <a href="/doors">Двери</a>
+        <a href="/contact">Контакты</a>
+        <a href="/profile">Профиль</a>
+        <a href="/cart">Корзина</a>
+        <a href="/orders">Заказы</a>
+    </nav>
+    <div class="container">
+        {% if orders %}
+            <ul>
+                {% for order in orders %}
+                    <li>
+                        Заказ №{{ order.id }} - Дата: {{ order.created_at }} - Статус: {{ order.status }}
+                        <ul>
+                            {% for item in order.items.all %}
+                                <li>{{ item.product.name }} - {{ item.quantity }} x {{ item.product.price }} руб.</li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>У вас пока нет заказов.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

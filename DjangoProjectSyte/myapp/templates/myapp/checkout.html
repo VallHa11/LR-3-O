@@ -1,0 +1,22 @@
+
+{% load static %}
+{% block title %}Оформление заказа{% endblock %}
+{% block content %}
+<div class="checkout-container">
+<div class="checkout-form">
+<h2>Оплата заказа</h2>
+<form action="{% url 'checkout' %}" method="post">
+{% csrf_token %}
+<script
+src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+data-key="{{ key }}"
+data-amount="{{ total }}"
+data-name="Магазин"
+data-description="Оплата заказа"
+data-currency="usd">
+</script>
+</form>
+<p class="total-price">Сумма заказа: {{ total_rub }} ₽</p>
+</div>
+</div>
+{% endblock %}
