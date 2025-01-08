@@ -19,22 +19,33 @@
         <a href="/orders">Заказы</a>
     </nav>
     <div class="container">
-        {% if orders %}
-            <ul>
-                {% for order in orders %}
-                    <li>
-                        Заказ №{{ order.id }} - Дата: {{ order.created_at }} - Статус: {{ order.status }}
-                        <ul>
-                            {% for item in order.items.all %}
-                                <li>{{ item.product.name }} - {{ item.quantity }} x {{ item.product.price }} руб.</li>
-                            {% endfor %}
-                        </ul>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>У вас пока нет заказов.</p>
-        {% endif %}
-    </div>
+    {% if orders %}
+        <ul>
+            {% for order in orders %}
+                <li>
+                    <strong>Заказ №{{ order.id }}</strong> - Дата: {{ order.created_at }} - Статус: {{ order.status }}
+
+                    <!-- Отображение адреса доставки -->
+                    {% if order.deliveryaddress %}
+                        <p>
+                            <strong>Адрес доставки:</strong>
+                            {{ order.deliveryaddress.address }}, {{ order.deliveryaddress.city }}, {{ order.deliveryaddress.postal_code }}
+                        </p>
+                    {% else %}
+                        <p><strong>Адрес доставки:</strong> Не указан</p>
+                    {% endif %}
+
+                    <ul>
+                        {% for item in order.items.all %}
+                            <li>{{ item.product.name }} - {{ item.quantity }} x {{ item.product.price }} руб.</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>У вас пока нет заказов.</p>
+    {% endif %}
+</div>
 </body>
 </html>

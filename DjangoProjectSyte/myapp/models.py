@@ -35,3 +35,14 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f"{self.quantity} x {self.product.name} in order {self.order.id}"
+
+class DeliveryAddress(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    order = models.OneToOneField(Order, on_delete=models.CASCADE, null=True, blank=True)
+    address = models.TextField()
+    city = models.CharField(max_length=100)
+    postal_code = models.CharField(max_length=20)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"Delivery Address for Order {self.order.id if self.order else 'Not Assigned'}"

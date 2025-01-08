@@ -176,28 +176,47 @@ def checkout_view(request):
         'total_rub': total_rub,
         'total_usd': total_usd,
     })
+from .forms import DeliveryAddressForm
+
 @login_required
 def place_order(request):
     cart_items = CartItem.objects.filter(user=request.user)
+
     if not cart_items:
         messages.error(request, "Ваша корзина пуста.")
         return redirect('cart')
 
-    order = Order.objects.create(user=request.user)
-    for item in cart_items:
-        OrderItem.objects.create(
-            order=order,
-            product=item.product,
-            quantity=item.quantity
-        )
-    cart_items.delete()
+    if request.method == 'POST':
+        form = DeliveryAddressForm(request.POST)
+        if form.is_valid():
+            # Создание заказа
+            order = Order.objects.create(user=request.user)
 
-    messages.success(request, "Ваш заказ был успешно создан.")
+            # Сохранение адреса
+            address = form.save(commit=False)
+            address.order = order
+            address.user = request.user
+            address.save()
 
-    return redirect('orders_list')
+            # Перенос элементов корзины в заказ
+            for item in cart_items:
+                OrderItem.objects.create(
+                    order=order,
+                    product=item.product,
+                    quantity=item.quantity
+                )
+            cart_items.delete()
+
+            messages.success(request, "Ваш заказ был успешно создан. Спасибо за ваш заказ!")
+            return redirect('orders_list')
+    else:
+        form = DeliveryAddressForm()
+
+    return render(request, 'myapp/place_order.html', {'form': form, 'cart_items': cart_items})
 
 @login_required
+@login_required
 def orders_list(request):
-    orders = Order.objects.filter(user=request.user).prefetch_related('items__product')
+    orders = Order.objects.filter(user=request.user).prefetch_related('items__product', 'deliveryaddress')
     return render(request, 'myapp/orders.html', {'orders': orders})
 
